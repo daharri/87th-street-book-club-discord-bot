@@ -25,3 +25,5 @@ Run the command
 Running the project
    - npm run dev  (Use this command for development)
    - npm run start
+
+THIS WILL NOT WORK WITHOUT THE BOT TOKEN. THE TOKEN IS A SECRET 🤫🤫🤫
