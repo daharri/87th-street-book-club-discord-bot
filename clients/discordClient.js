@@ -1,9 +1,10 @@
 const fs = require('fs')
-const { ADD_BOOK, SHOW_BOOKS, } = require('../constants')
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK } = require('../constants')
 const { isISBN } = require('../utils/utils')
 
-const bookClubInfoFileLocation = 'savedData/bookClubInfo.json';
+const bookClubInfoFileLocation = 'savedData/bookClubInfo.json'
 const bookClubInfo = require(`../${bookClubInfoFileLocation}`)
+const selectedBook = require('../savedData/selectedBook.json')
 
 async function readMessage(msg) {
   const messageText = msg.content
@@ -35,10 +36,13 @@ async function readMessage(msg) {
       msg.reply(`Added the book - ${message} `)
   } else if (messageText.startsWith(SHOW_BOOKS)) {
       const books = bookClubInfo.suggestedBooks
-      msg.reply(`${books.map(book => ` ${book.title ? book.title : ''} ${book.author ? 'by ' + book.author : ''} ${book.ISBN ? 'ISBN: ' + book.ISBN : ''}`)}`)
+      msg.reply(`\n${books.map(book => `Title: ${book.title} \n Author: ${book.author} \n\n`)}`)
+  } else if (messageText.startsWith(CURRENT_BOOK)) { 
+    msg.reply(`${selectedBook.title} by ${selectedBook.author}`)
   } else if (messageText.startsWith('.commands') || messageText.startsWith('.help')) {
       
       msg.reply(`\nHere is a list of useful commands: 
+      \n\`${CURRENT_BOOK} - This command will show details of the current book\` 
       \n\`${SHOW_BOOKS} - This command will list all books suggested by club members\` 
       \n\`${ADD_BOOK} - This command will add a book to the list of suggested books\``)
   }
