@@ -36,7 +36,7 @@ async function readMessage(msg) {
       msg.reply(`Added the book - ${message} `)
   } else if (messageText.startsWith(SHOW_BOOKS)) {
       const books = bookClubInfo.suggestedBooks
-      msg.reply(`\n${books.map(book => `Title: ${book.title} \n Author: ${book.author} \n\n`)}`)
+      msg.reply(`\n${books.map(book => JSON.stringify(book))}`)
   } else if (messageText.startsWith(CURRENT_BOOK)) { 
     msg.reply(`${selectedBook.title} by ${selectedBook.author}`)
   } else if (messageText.startsWith('.commands') || messageText.startsWith('.help')) {
