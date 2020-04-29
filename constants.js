@@ -6,6 +6,7 @@ const BOOK_CLUB_INFO = 'bookClubInfo.json';
 const ADD_BOOK = '.addBook';
 const REMOVE_BOOK = '.removeBook';
 const SHOW_BOOKS = '.allBooks';
+const CURRENT_BOOK = '.currentBook';
 
 module.exports = {
   BOT_SETTINGS,
@@ -13,5 +14,6 @@ module.exports = {
   BOOK_CLUB_INFO,
   ADD_BOOK,
   REMOVE_BOOK,
-  SHOW_BOOKS
+  SHOW_BOOKS,
+  CURRENT_BOOK
 }

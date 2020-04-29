@@ -10,7 +10,7 @@ exports.start = (client) => {
 
   const dailyReminders = new CronJob('0 0 11 * * *', () => {
     const channelId = process.env.NODE_ENV === 'development' ? bookClubInfo.testChannelId : bookClubInfo.bookClubChannelId
-    client.channels.cache.get(channelId).send(`Don't forget to read :nerd: 
+    client.channels.cache.get(channelId).send(`@bookies Don't forget to read :nerd: 
       \n Current Book: ${selectedBook.title} by ${selectedBook.author}
       \n Time expires ${endDate}
       \n Type \`.help\` for more info
