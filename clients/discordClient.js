@@ -1,4 +1,4 @@
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS } = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK } = require('../constants');
 const DCH = require('./discordClientHelper');
 
 async function readMessage(msg) {
@@ -19,6 +19,9 @@ async function readMessage(msg) {
       case CURRENT_BOOK :
         const currentBook = DCH.getCurrentBook();
         msg.reply(currentBook);
+        break;
+      case DELETE_BOOK : 
+        DCH.sendDeleteBookMessage(msg)
         break;
       case HELP :
         const helpMessage = DCH.getHelpMessage();

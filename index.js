@@ -11,7 +11,8 @@ client.on("ready", () => {
 
 client.on("message", async msg => {
   const environment = process.env.NODE_ENV
-  if (environment === 'production' || (environment === 'development' && msg.channel.id === '696569704415887373')) {
+  const devChannel = '696569704415887373'
+  if ((environment === 'production' && msg.channel.id != devChannel) || (environment === 'development' && msg.channel.id === devChannel)) {
     await readMessage(msg)
   }
 })
