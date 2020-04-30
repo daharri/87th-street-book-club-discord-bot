@@ -2,6 +2,7 @@
   "title": "Haunted",
   "author": "Chuck Palahniuk",
   "ISBN": "9781400032822",
+  "purchaseLink": "https://www.amazon.com/Haunted-Novel-Chuck-Palahniuk/dp/1400032822/ref=tmm_pap_swatch_0?_encoding=UTF8&qid=1588209145&sr=8-1",
   "goodreads": {
     "bookId": "",
     "id": "",
@@ -11,7 +12,8 @@
     "original_publication_year": "",
     "original_publication_month": "",
     "original_publication_day": "",
-    "average_rating": ""
+    "average_rating": "",
+    "thumbnail": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1391152326l/22288.jpg"
   },
   "startDate": "04-05-2020",
   "endDate": "05-15-2020"

@@ -7,6 +7,8 @@ const ADD_BOOK = '.addBook';
 const REMOVE_BOOK = '.removeBook';
 const SHOW_BOOKS = '.allBooks';
 const CURRENT_BOOK = '.currentBook';
+const HELP = '.help';
+const COMMANDS = '.commands';
 
 module.exports = {
   BOT_SETTINGS,
@@ -15,5 +17,7 @@ module.exports = {
   ADD_BOOK,
   REMOVE_BOOK,
   SHOW_BOOKS,
-  CURRENT_BOOK
+  CURRENT_BOOK,
+  HELP,
+  COMMANDS
 }
