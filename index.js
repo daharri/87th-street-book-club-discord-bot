@@ -3,10 +3,10 @@ const client = new Discord.Client()
 const { readMessage } = require('./clients/discordClient')
 
 require('dotenv').config()
-require('./crons/scheduledTasks').start(client)
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
+  require('./crons/scheduledTasks').start(client)
 })
 
 client.on("message", async msg => {

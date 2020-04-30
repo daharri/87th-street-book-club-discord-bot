@@ -97,6 +97,7 @@ function getBooks () {
       inline: true
     }
   })
+  
   return embedMessage({
     title: 'Suggested Books',
     description: 'Below is a list of suggested books provided by book club members',
