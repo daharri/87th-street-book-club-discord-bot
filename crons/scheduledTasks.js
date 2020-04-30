@@ -28,7 +28,7 @@ exports.start = (client) => {
     const channelId = process.env.NODE_ENV === 'development' ? bookClubInfo.testChannelId : bookClubInfo.bookClubChannelId;
     const message = embedMessage({
       title: "Daily Reminder",
-      description: "@bookies Don't forget to read :nerd:",
+      description: "<@&696581354569203752> Don't forget to read :nerd:", // Bookies role id : 696581354569203752. Move to saved data.
       fields: [...reminderInfo]
     });
     console.log(channelId)
