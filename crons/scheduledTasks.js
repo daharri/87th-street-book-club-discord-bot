@@ -24,7 +24,7 @@ exports.start = (client) => {
     }
   ]
 
-  const dailyReminders = new CronJob('* * * * * *', () => {
+  const dailyReminders = new CronJob('0 0 11 * * *', () => {
     const channelId = process.env.NODE_ENV === 'development' ? bookClubInfo.testChannelId : bookClubInfo.bookClubChannelId;
     const message = embedMessage({
       title: "Daily Reminder",
