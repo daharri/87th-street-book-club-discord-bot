@@ -2,11 +2,13 @@ const fs = require('fs')
 const relativeTime = require('dayjs/plugin/relativeTime')
 const dayjs = require('dayjs').extend(relativeTime)
 const { isISBN, embedMessage } = require('../utils/utils')
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS } = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK } = require('../constants');
 
 const bookClubInfoFileLocation = 'savedData/bookClubInfo.json'
 const bookClubInfo = require(`../${bookClubInfoFileLocation}`)
 const selectedBook = require('../savedData/selectedBook.json')
+const discordFileLocation = 'savedData/discord.json'
+const discordInfo = require(`../${discordFileLocation}`)
 
 function addBook (message) {
   let bookISBN = message.split(' ').filter(text => isISBN(text))[0]
@@ -105,6 +107,56 @@ function getBooks () {
   });
 }
 
+async function deleteBook (bookIndex, deleteMessage) {
+  const updatedList = [];
+  let deletedBook;
+  bookClubInfo.suggestedBooks.forEach((book, index) => {
+    if (index === bookIndex) {
+      deletedBook = book; 
+    } else {
+      updatedList.push(book);
+    }
+  }, []);
+  bookClubInfo.suggestedBooks = updatedList;
+
+  await fs.writeFileSync(bookClubInfoFileLocation, JSON.stringify(bookClubInfo), err => {
+    if(err) {
+      console.error(err);
+    }
+  })
+
+  deleteMessage.edit(embedMessage({
+    title: 'Book Deleted!',
+    description: 'The selected book has been removed',
+    fields: [{name: deletedBook.title, value: deletedBook.author}]
+  }))
+}
+
+function sendDeleteBookMessage (msg) {
+  const bookInfo = bookClubInfo.suggestedBooks.map((book, index) => {
+    return {
+      name: `${book.title} ${discordInfo.emojis[index]}`,
+      value: `${book.author || 'No Author'} \n ${book.ISBN || ''} `,
+      inline: true
+    }
+  })
+
+  msg.channel.send(embedMessage({
+    title: 'Choose a book to delete',
+    description: 'To delete a book, react with the appropriate reaction',
+    fields: [...bookInfo]
+  })).then(async message => {
+    const collector = message.createReactionCollector(() => true, { time: 15000 });
+    collector.on('collect', reaction => {
+      const matchingEmoji = discordInfo.emojis.find(emoji => emoji === reaction.emoji.name)
+      if (matchingEmoji !== -1) {
+        deleteBook(discordInfo.emojis.indexOf(matchingEmoji), message)
+      }
+    });
+    collector.on('end', () => console.log("times up"));
+  });
+}
+
 function getCommandsMessage () {
   const commands = [
     {
@@ -123,12 +175,17 @@ function getCommandsMessage () {
       inline: true
     },
     {
+      name: DELETE_BOOK,
+      value: 'This command will allow you delete a book from the list of suggested books'
+    },
+    {
       name: COMMANDS,
       value: 'This command will list all available commands'
     },
     {
       name: HELP,
-      value: 'This command provide you with useful information for interacting with the librarian'    },
+      value: 'This command provide you with useful information for interacting with the librarian'
+    },
   ];
   return embedMessage({
     title: 'Commands',
@@ -167,6 +224,8 @@ function getHelpMessage () {
 module.exports = {
   addBook,
   getBooks,
+  deleteBook,
+  sendDeleteBookMessage,
   getCurrentBook,
   getHelpMessage,
   getCommandsMessage

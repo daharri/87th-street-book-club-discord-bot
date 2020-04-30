@@ -72,6 +72,15 @@ function embedMessage (options) {
 	.setFooter(messageOptions.footer, messageOptions.footerImage);
 }
 
+    /* Will Be Useful - Creates a list of emojis using the one you select in discord*/
+
+    // const putReactions = await message.awaitReactions(() => true, { time: 30000 }).then(reactions =>{
+    //   discordInfo.emojis.push(...reactions.map(reaction => reaction.emoji.name))
+    //   fs.writeFile(discordFileLocation, JSON.stringify(discordInfo), (err) => {
+    //     if(err) console.error(err);
+    //   })
+    // })
+
 module.exports = {
   isEmpty,
   isISBN,
