@@ -1,5 +1,5 @@
 {
   "botName": "The Librarian",
-  "authorizedChannels": [],
-  "authorizedDevChannels": []
+  "authorizedChannels": ["696559476152729631"],
+  "authorizedDevChannels": ["696569704415887373"]
 }
