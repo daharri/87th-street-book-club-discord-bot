@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const client = new Discord.Client()
 const { readMessage } = require('./clients/discordClient')
+const { authorizedChannels, authorizedDevChannels } = require('./savedData/settings.json')
 
 require('dotenv').config()
 
@@ -11,8 +12,7 @@ client.on("ready", () => {
 
 client.on("message", async msg => {
   const environment = process.env.NODE_ENV
-  const devChannel = '696569704415887373'
-  if ((environment === 'production' && msg.channel.id != devChannel) || (environment === 'development' && msg.channel.id === devChannel)) {
+  if ((environment === 'production' && authorizedChannels.includes(msg.channel.id)) || (environment === 'development' && authorizedDevChannels.includes(msg.channel.id))) {
     await readMessage(msg)
   }
 })
