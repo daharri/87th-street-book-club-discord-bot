@@ -2,6 +2,7 @@ const BOT_SETTINGS = 'settings.json';
 const SELECTED_BOOK_INFO = 'selectedBook.json';
 const BOOK_CLUB_INFO = 'bookClubInfo.json';
 
+//mopralkjdsljak;djh
 // Commands
 const ADD_BOOK = '.addBook';
 const SHOW_BOOKS = '.allBooks';

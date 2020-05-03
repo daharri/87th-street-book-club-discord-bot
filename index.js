@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 const { readMessage } = require('./clients/discordClient')
 const { authorizedChannels, authorizedDevChannels } = require('./savedData/settings.json')
+// Bens a bitch sd,jasdjhksahdlsadb,cmnb,ZBc.d
 
 require('dotenv').config()
 
