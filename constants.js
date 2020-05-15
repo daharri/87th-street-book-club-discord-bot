@@ -9,6 +9,7 @@ const CURRENT_BOOK = '.currentBook';
 const DELETE_BOOK = '.deleteBook';
 const HELP = '.help';
 const COMMANDS = '.commands';
+const EXTEND_TIME = '.extend';
 
 module.exports = {
   BOT_SETTINGS,
@@ -19,5 +20,6 @@ module.exports = {
   SHOW_BOOKS,
   CURRENT_BOOK,
   HELP,
-  COMMANDS
+  COMMANDS,
+  EXTEND_TIME
 }

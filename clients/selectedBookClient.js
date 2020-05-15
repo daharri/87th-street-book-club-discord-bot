@@ -21,7 +21,20 @@ function chooseBook () {
   });
 }
 
+function updateExpirationTime (time, timeUnit) {
+  const oldTime = dayjs(selectedBook.endDate);
+  const newTime = oldTime.add(time, timeUnit.split('')[0].toLowerCase());
+  selectedBook.endDate = newTime;
+  fs.writeFile('savedData/selectedBook.json', JSON.stringify(selectedBook), (error) => {
+    if (error) {
+      console.log(error)
+    }
+  });
+  return newTime;
+}
+
 module.exports = {
   setSelectedBookData,
-  chooseBook
+  chooseBook,
+  updateExpirationTime
 }

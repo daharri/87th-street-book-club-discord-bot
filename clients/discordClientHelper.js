@@ -3,6 +3,7 @@ const relativeTime = require('dayjs/plugin/relativeTime')
 const dayjs = require('dayjs').extend(relativeTime)
 const { isISBN, embedMessage } = require('../utils/utils')
 const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK } = require('../constants');
+const selectedBookClient = require('../clients/selectedBookClient');
 
 const bookClubInfoFileLocation = 'savedData/bookClubInfo.json'
 const bookClubInfo = require(`../${bookClubInfoFileLocation}`)
@@ -132,6 +133,55 @@ async function deleteBook (bookIndex, deleteMessage) {
   }))
 }
 
+function getExtensionTime (messageText) {
+  const extensionTime = messageText.split(' ').find(string => {
+    return isNaN(string) === false;
+  });
+  const extensionTimeUnit = messageText.split(' ').find(string => {
+    if (discordInfo.timeUnits.includes(string.toLowerCase())) {
+      return true;
+    }
+  });
+
+  return { extensionTime, extensionTimeUnit };
+}
+
+async function extendTime (msg) {
+  const { extensionTime, extensionTimeUnit } = getExtensionTime(msg.content);
+  if (!extensionTime || !extensionTimeUnit) {
+    msg.reply(`\n Error: Please specify a number and a time unit (days, month, years, etc) \n ex: .extendTime 30 days`);
+  } else {
+    msg.channel.send(embedMessage({
+      title: 'Time Extension Request',
+      description: `You have requested to extend the time by ${extensionTime} ${extensionTimeUnit} `,
+      fields: {
+        name: `To extend the time, you must receive 3 votes. To vote, react with an emoji of your choice.`,
+        value: `Voting will expire after 3 votes or 1 hour.\n Voting more than once will invalidate the extension request`,
+      }
+    })).then(async message => {
+      const collector = message.createReactionCollector(() => true, { max: 3, time: 3600000 });
+      let users = [];
+      collector.on('collect', (reaction, user) => {
+          if (users.includes(user.id)) {
+            msg.channel.send('Stop trying to cheat!');
+          } else {
+            users.push(user.id);
+          }
+      });
+      collector.on('end', (collected) => {
+        if ((collected.count === 3)) {
+          const expirationDate = selectedBookClient.updateExpirationTime(extensionTime, extensionTimeUnit);
+          msg.channel.send(`New Expiration date is ${expirationDate}`);
+        } else if (collected.count < 3) {
+          msg.channel.send('Expiration time not updated. Not Enough Votes!');
+        } else {
+          msg.channel.send('Expiration time not updated. Double voting is not allowed!')
+        }
+      });
+    });
+  }
+}
+
 function sendDeleteBookMessage (msg) {
   const bookInfo = bookClubInfo.suggestedBooks.map((book, index) => {
     return {
@@ -225,6 +275,7 @@ module.exports = {
   addBook,
   getBooks,
   deleteBook,
+  extendTime,
   sendDeleteBookMessage,
   getCurrentBook,
   getHelpMessage,
