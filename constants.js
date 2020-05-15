@@ -10,6 +10,7 @@ const DELETE_BOOK = '.deleteBook';
 const HELP = '.help';
 const random_book = '.randomize';
 const COMMANDS = '.commands';
+const EXTEND_TIME = '.extend';
 
 
 module.exports = {
@@ -21,6 +22,7 @@ module.exports = {
   SHOW_BOOKS,
   CURRENT_BOOK,
   HELP,
-  random_book,
-  COMMANDS
+  COMMANDS,
+  EXTEND_TIME,
+  random_book
 }
