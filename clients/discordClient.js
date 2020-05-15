@@ -1,4 +1,3 @@
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK,  } = require('../constants');
 const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME, random_book} = require('../constants');
 const DCH = require('./discordClientHelper');
 
