@@ -10,7 +10,7 @@ const selectedBook = require('../savedData/selectedBook.json')
 const discordFileLocation = 'savedData/discord.json'
 const discordInfo = require(`../${discordFileLocation}`)
 
-function addBook (message) {
+function addBook(message) {
   let bookISBN = message.split(' ').filter(text => isISBN(text))[0]
   let bookAuthor = message.split(/(?<= |^)by(?= |$)/gi)[1]
   let bookTitle = message.split(/(?<= |^)by(?= |$)/gi)[0]
@@ -31,6 +31,7 @@ function addBook (message) {
       return console.error(err)
     }
   });
+
 
   const bookInfo = [
     {
@@ -61,7 +62,14 @@ function addBook (message) {
   });
 }
 
-function getCurrentBook () {
+async function randomize() {
+  var listofbooks = bookClubInfo.suggestedBooks;
+  var randomItem = listofbooks[Math.floor(Math.random() * listofbooks.length)];
+  return ('The next book is ' + randomItem.title)
+}
+
+
+function getCurrentBook() {
   const today = dayjs();
   const timeLeft = today.to(dayjs(selectedBook.endDate));
   const bookInfo = [
@@ -91,7 +99,7 @@ function getCurrentBook () {
   });
 }
 
-function getBooks () {
+function getBooks() {
   const bookInfo = bookClubInfo.suggestedBooks.map(book => {
     return {
       name: book.title,
@@ -99,7 +107,7 @@ function getBooks () {
       inline: true
     }
   })
-  
+
   return embedMessage({
     title: 'Suggested Books',
     description: 'Below is a list of suggested books provided by book club members',
@@ -107,12 +115,12 @@ function getBooks () {
   });
 }
 
-async function deleteBook (bookIndex, deleteMessage) {
+async function deleteBook(bookIndex, deleteMessage) {
   const updatedList = [];
   let deletedBook;
   bookClubInfo.suggestedBooks.forEach((book, index) => {
     if (index === bookIndex) {
-      deletedBook = book; 
+      deletedBook = book;
     } else {
       updatedList.push(book);
     }
@@ -120,7 +128,7 @@ async function deleteBook (bookIndex, deleteMessage) {
   bookClubInfo.suggestedBooks = updatedList;
 
   await fs.writeFileSync(bookClubInfoFileLocation, JSON.stringify(bookClubInfo), err => {
-    if(err) {
+    if (err) {
       console.error(err);
     }
   })
@@ -128,11 +136,11 @@ async function deleteBook (bookIndex, deleteMessage) {
   deleteMessage.edit(embedMessage({
     title: 'Book Deleted!',
     description: 'The selected book has been removed',
-    fields: [{name: deletedBook.title, value: deletedBook.author}]
+    fields: [{ name: deletedBook.title, value: deletedBook.author }]
   }))
 }
 
-function sendDeleteBookMessage (msg) {
+function sendDeleteBookMessage(msg) {
   const bookInfo = bookClubInfo.suggestedBooks.map((book, index) => {
     return {
       name: `${book.title} ${discordInfo.emojis[index]}`,
@@ -157,7 +165,7 @@ function sendDeleteBookMessage (msg) {
   });
 }
 
-function getCommandsMessage () {
+function getCommandsMessage() {
   const commands = [
     {
       name: CURRENT_BOOK,
@@ -194,7 +202,7 @@ function getCommandsMessage () {
   });
 }
 
-function getHelpMessage () {
+function getHelpMessage() {
   const helpInfo = [
     {
       name: 'Info',
@@ -228,5 +236,6 @@ module.exports = {
   sendDeleteBookMessage,
   getCurrentBook,
   getHelpMessage,
+  randomize,
   getCommandsMessage
 }
