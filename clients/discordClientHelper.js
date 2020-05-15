@@ -169,18 +169,20 @@ async function extendTime (msg) {
     })).then(async message => {
       const collector = message.createReactionCollector(() => true, { max: 3, time: 3600000 });
       let users = [];
+      let shouldUpdate = true;
       collector.on('collect', (reaction, user) => {
           if (users.includes(user.id)) {
+            shouldUpdate = false;
             msg.channel.send('Stop trying to cheat!');
           } else {
             users.push(user.id);
           }
       });
       collector.on('end', (collected) => {
-        if ((collected.count === 3)) {
+        if ((collected.size === 3) && shouldUpdate) {
           const expirationDate = selectedBookClient.updateExpirationTime(extensionTime, extensionTimeUnit);
           msg.channel.send(`New Expiration date is ${expirationDate}`);
-        } else if (collected.count < 3) {
+        } else if (collected.size < 3) {
           msg.channel.send('Expiration time not updated. Not Enough Votes!');
         } else {
           msg.channel.send('Expiration time not updated. Double voting is not allowed!')
