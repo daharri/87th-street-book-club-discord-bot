@@ -1,4 +1,5 @@
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME } = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK,  } = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME, random_book} = require('../constants');
 const DCH = require('./discordClientHelper');
 
 async function readMessage(msg) {
@@ -26,6 +27,10 @@ async function readMessage(msg) {
       case HELP :
         const helpMessage = DCH.getHelpMessage();
         msg.reply(helpMessage);
+        break;
+      case random_book :
+        const randomB = await DCH.randomize()
+        msg.reply(randomB)
         break;
       case COMMANDS :
         const commandsMessage = DCH.getCommandsMessage();

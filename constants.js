@@ -8,8 +8,10 @@ const SHOW_BOOKS = '.allBooks';
 const CURRENT_BOOK = '.currentBook';
 const DELETE_BOOK = '.deleteBook';
 const HELP = '.help';
+const random_book = '.randomize';
 const COMMANDS = '.commands';
 const EXTEND_TIME = '.extend';
+
 
 module.exports = {
   BOT_SETTINGS,
@@ -21,5 +23,6 @@ module.exports = {
   CURRENT_BOOK,
   HELP,
   COMMANDS,
-  EXTEND_TIME
+  EXTEND_TIME,
+  random_book
 }
