@@ -8,7 +8,9 @@ const SHOW_BOOKS = '.allBooks';
 const CURRENT_BOOK = '.currentBook';
 const DELETE_BOOK = '.deleteBook';
 const HELP = '.help';
+const random_book = '.randomize';
 const COMMANDS = '.commands';
+
 
 module.exports = {
   BOT_SETTINGS,
@@ -19,5 +21,6 @@ module.exports = {
   SHOW_BOOKS,
   CURRENT_BOOK,
   HELP,
+  random_book,
   COMMANDS
 }
