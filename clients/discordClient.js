@@ -32,7 +32,7 @@ async function readMessage(msg) {
         msg.reply('Your number is ' + throwdice)
         break;
       case random_book :
-        const randomB = await DCH.randomize()
+        const randomB = DCH.randomize()
         msg.reply(randomB)
         break;
       case COMMANDS :
