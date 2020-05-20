@@ -9,6 +9,7 @@ const CURRENT_BOOK = '.currentBook';
 const DELETE_BOOK = '.deleteBook';
 const HELP = '.help';
 const random_book = '.randomize';
+const roll = '.roll'
 const COMMANDS = '.commands';
 
 
@@ -21,6 +22,7 @@ module.exports = {
   SHOW_BOOKS,
   CURRENT_BOOK,
   HELP,
+  roll,
   random_book,
   COMMANDS
 }

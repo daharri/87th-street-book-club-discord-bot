@@ -1,4 +1,4 @@
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book} = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll} = require('../constants');
 const DCH = require('./discordClientHelper');
 
 async function readMessage(msg) {
@@ -26,6 +26,10 @@ async function readMessage(msg) {
       case HELP :
         const helpMessage = DCH.getHelpMessage();
         msg.reply(helpMessage);
+        break;
+      case roll :
+        var throwdice = Math.floor(Math.random() * (100 - 1) ) + 1
+        msg.reply('Your number is ' + throwdice)
         break;
       case random_book :
         const randomB = await DCH.randomize()
