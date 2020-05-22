@@ -11,6 +11,7 @@ const HELP = '.help';
 const random_book = '.randomize';
 const roll = '.roll'
 const COMMANDS = '.commands';
+const EXTEND_TIME = '.extend';
 
 
 module.exports = {
@@ -24,5 +25,6 @@ module.exports = {
   HELP,
   roll,
   random_book,
-  COMMANDS
+  COMMANDS,
+  EXTEND_TIME
 }

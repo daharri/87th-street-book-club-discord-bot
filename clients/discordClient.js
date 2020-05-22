@@ -1,4 +1,4 @@
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll} = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME, random_book, roll} = require('../constants');
 const DCH = require('./discordClientHelper');
 
 async function readMessage(msg) {
@@ -38,6 +38,9 @@ async function readMessage(msg) {
       case COMMANDS :
         const commandsMessage = DCH.getCommandsMessage();
         msg.reply(commandsMessage);
+        break;
+      case EXTEND_TIME :
+        DCH.extendTime(msg);
         break;
       default :
         const badCommand = messageText.split(' ')[0];
