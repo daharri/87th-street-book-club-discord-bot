@@ -2,8 +2,7 @@ const fs = require('fs')
 const relativeTime = require('dayjs/plugin/relativeTime')
 const dayjs = require('dayjs').extend(relativeTime)
 const { isISBN, embedMessage } = require('../utils/utils')
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK } = require('../constants');
-const selectedBookClient = require('../clients/selectedBookClient');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll } = require('../constants');
 
 const bookClubInfoFileLocation = 'savedData/bookClubInfo.json'
 const bookClubInfo = require(`../${bookClubInfoFileLocation}`)
@@ -63,7 +62,7 @@ function addBook(message) {
   });
 }
 
-async function randomize() {
+function randomize() {
   var listofbooks = bookClubInfo.suggestedBooks;
   var randomItem = listofbooks[Math.floor(Math.random() * listofbooks.length)];
   return ('The next book is ' + randomItem.title)
@@ -237,6 +236,14 @@ function getCommandsMessage() {
     {
       name: DELETE_BOOK,
       value: 'This command will allow you delete a book from the list of suggested books'
+    },
+    { name: random_book,
+      value: 'This command will choose the next book',
+      inline: true
+    },
+    { name: roll,
+      value: 'This command will roll a number between 1-100, Good Luck',
+      inline: true
     },
     {
       name: COMMANDS,
