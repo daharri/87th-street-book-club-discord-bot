@@ -1,4 +1,4 @@
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME, random_book, roll} = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME, random_book, roll, REVIEW_BOOK, REFRESH_GOODREADS, UPDATE_CURRENT_BOOK} = require('../constants');
 const DCH = require('./discordClientHelper');
 
 async function readMessage(msg) {
@@ -41,6 +41,18 @@ async function readMessage(msg) {
         break;
       case EXTEND_TIME :
         DCH.extendTime(msg);
+        break;
+      case REVIEW_BOOK : 
+        // DCH.reviewBook(msg);
+        msg.reply('Not Implemented');
+      case REFRESH_GOODREADS : 
+        DCH.refreshGoodReads();
+        msg.channel.send(`.currentBook`);
+        break;
+      case UPDATE_CURRENT_BOOK: 
+        const text = messageText.replace(/^.updateCurrentBook/i, '');
+        DCH.updateCurrentBook(text);
+        msg.reply('Book Updated!');
         break;
       default :
         const badCommand = messageText.split(' ')[0];

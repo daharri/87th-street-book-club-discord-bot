@@ -6,12 +6,15 @@ const BOOK_CLUB_INFO = 'bookClubInfo.json';
 const ADD_BOOK = '.addBook';
 const SHOW_BOOKS = '.allBooks';
 const CURRENT_BOOK = '.currentBook';
+const UPDATE_CURRENT_BOOK = '.updateCurrentBook';
 const DELETE_BOOK = '.deleteBook';
 const HELP = '.help';
 const random_book = '.randomize';
 const roll = '.roll'
 const COMMANDS = '.commands';
 const EXTEND_TIME = '.extend';
+const REVIEW_BOOK = '.review';
+const REFRESH_GOODREADS = '.refreshGoodReads';
 
 
 module.exports = {
@@ -26,5 +29,8 @@ module.exports = {
   roll,
   random_book,
   COMMANDS,
-  EXTEND_TIME
+  EXTEND_TIME,
+  REVIEW_BOOK,
+  REFRESH_GOODREADS,
+  UPDATE_CURRENT_BOOK
 }

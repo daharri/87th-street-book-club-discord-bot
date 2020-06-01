@@ -1,8 +1,9 @@
 const fs = require('fs')
 const relativeTime = require('dayjs/plugin/relativeTime')
 const dayjs = require('dayjs').extend(relativeTime)
-const { isISBN, embedMessage } = require('../utils/utils')
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll } = require('../constants');
+const { isISBN, embedMessage, isEmpty } = require('../utils/utils')
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll, EXTEND_TIME, REFRESH_GOODREADS } = require('../constants');
+const { saveCurrentBookAsPrevious, setSelectedBookData } = require('./selectedBookClient')
 
 const bookClubInfoFileLocation = 'savedData/bookClubInfo.json'
 const bookClubInfo = require(`../${bookClubInfoFileLocation}`)
@@ -62,16 +63,33 @@ function addBook(message) {
   });
 }
 
+function updateCurrentBook(message) {
+  const messageTitle = message.split(/(?<= |^)by(?= |$)/gi)[0];
+  const { title, author } = bookClubInfo.suggestedBooks.find(book => book.title = messageTitle);
+  saveCurrentBookAsPrevious();
+  setSelectedBookData({ title, author });
+}
+
 function randomize() {
   var listofbooks = bookClubInfo.suggestedBooks;
   var randomItem = listofbooks[Math.floor(Math.random() * listofbooks.length)];
   return ('The next book is ' + randomItem.title)
 }
 
+function refreshGoodReads () {
+  updateGoodReadsData();
+}
 
 function getCurrentBook() {
   const today = dayjs();
   const timeLeft = today.to(dayjs(selectedBook.endDate));
+  const goodreadsInfo = !isEmpty(selectedBook.goodreads) ? `
+  - Title: ${selectedBook.goodreads.best_book.title}
+  - Author: ${selectedBook.goodreads.best_book.author.name}
+  - Rating: ${selectedBook.goodreads.average_rating} based on ${selectedBook.goodreads.ratings_count} ratings
+  - Published: ${selectedBook.goodreads.original_publication_month}/${selectedBook.goodreads.original_publication_day}/${selectedBook.goodreads.original_publication_year}
+  ` : ' Goodreads Info Not Found';
+  
   const bookInfo = [
     {
       name: selectedBook.title,
@@ -83,18 +101,22 @@ function getCurrentBook() {
     },
     {
       name: 'Goodreads',
-      value: 'info coming soon'
+      value: goodreadsInfo
     },
     {
-      name: 'Buy',
+      name: 'Link',
       value: selectedBook.purchaseLink
     }
   ]
 
+  let thumbnail;
+  if (!isEmpty(selectedBook.goodreads)) {
+    thumbnail = selectedBook.goodreads.best_book.image_url;
+  }
   return embedMessage({
     title: 'Current Book',
     description: 'Information about the current book',
-    thumbnail: selectedBook.goodreads.thumbnail,
+    thumbnail: thumbnail,
     fields: [...bookInfo]
   });
 }
@@ -245,6 +267,14 @@ function getCommandsMessage() {
       value: 'This command will roll a number between 1-100, Good Luck',
       inline: true
     },
+    { name: EXTEND_TIME,
+      value: 'This command will allow you to extend the time left for the current book',
+      inline: true
+    },
+    { name: REFRESH_GOODREADS,
+      value: 'This command will refresh the data pulled from good reads about the current book',
+      inline: true
+    },
     {
       name: COMMANDS,
       value: 'This command will list all available commands'
@@ -291,11 +321,13 @@ function getHelpMessage() {
 module.exports = {
   addBook,
   getBooks,
+  updateCurrentBook,
   deleteBook,
   extendTime,
   sendDeleteBookMessage,
   getCurrentBook,
   getHelpMessage,
   randomize,
-  getCommandsMessage
+  getCommandsMessage,
+  refreshGoodReads
 }

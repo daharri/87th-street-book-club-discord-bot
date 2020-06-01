@@ -7,7 +7,7 @@ function isEmpty (data) {
     data === '' ||
     data === [] ||
     data.length === 0 ||
-    data === {}
+    Object.keys(data).length === 0
     ) return true;
   return false;
 }
