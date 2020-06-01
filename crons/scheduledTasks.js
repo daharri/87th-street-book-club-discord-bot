@@ -31,26 +31,25 @@ const reminderMessage = (timeLeft) => {
 }
 
 const newBookMessage = (newBookStartTime) => {
-  const newBookInfo = [
-  {
-    name: 'The new book will start in',
-    value: `${newBookStartTime}`
-  },
-  {
-    name: 'Voting will start 2 days before the new book is picked',
-    value: `Users can only vote once`
-  },
-  {
-    name: 'Help',
-    value: 'Type \`.help\` for more info'
-  }
-];
+  const newBookInfo = [{
+      name: 'The new book will start in',
+      value: `${newBookStartTime}`
+    },
+    {
+      name: 'Voting will start 2 days before the new book is picked',
+      value: `Users can only vote once`
+    },
+    {
+      name: 'Help',
+      value: 'Type \`.help\` for more info'
+    }
+  ];
 
-return embedMessage({
-  title: "New Book Reminder",
-  description: "<@&696581354569203752> \n The previous book is now done. Type `.review` to review the book." , // Bookies role id : 696581354569203752. Move to saved data.
-  fields: [...newBookInfo]
-});
+  return embedMessage({
+    title: "New Book Reminder",
+    description: "<@&696581354569203752> \n The previous book is now done. Type `.review` to review the book.", // Bookies role id : 696581354569203752. Move to saved data.
+    fields: [...newBookInfo]
+  });
 }
 
 exports.start = (client) => {
@@ -65,7 +64,7 @@ exports.start = (client) => {
       // // Randomize book
       // const message = newBookMessage(newBookStartTime);
       // client.channels.cache.get(channelId).send(message);
-    } else if (today > dayjs(selectedBook.endDate)) {
+    } else if (today < dayjs(selectedBook.endDate)) {
       const message = reminderMessage(timeLeft);
       client.channels.cache.get(channelId).send(message);
     } else {
