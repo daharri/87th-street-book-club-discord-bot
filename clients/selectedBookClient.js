@@ -20,7 +20,7 @@ function setSelectedBookData (book) {
         console.error(error)
       }
     });
-    // addGoodreadsData(book);
+    addGoodreadsData(book);
   }
 }
 
