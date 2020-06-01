@@ -3,7 +3,7 @@ const relativeTime = require('dayjs/plugin/relativeTime')
 const dayjs = require('dayjs').extend(relativeTime)
 const { isISBN, embedMessage, isEmpty } = require('../utils/utils')
 const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll, EXTEND_TIME, REFRESH_GOODREADS } = require('../constants');
-const { saveCurrentBookAsPrevious, setSelectedBookData } = require('./selectedBookClient')
+const { saveCurrentBookAsPrevious, setSelectedBookData, updateGoodReadsData } = require('./selectedBookClient')
 
 const bookClubInfoFileLocation = 'savedData/bookClubInfo.json'
 const bookClubInfo = require(`../${bookClubInfoFileLocation}`)
