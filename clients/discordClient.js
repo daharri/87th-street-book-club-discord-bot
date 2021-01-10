@@ -1,7 +1,7 @@
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME, random_book, roll, REVIEW_BOOK, REFRESH_GOODREADS, UPDATE_CURRENT_BOOK} = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME, random_book, roll, REVIEW_BOOK, REFRESH_GOODREADS, UPDATE_CURRENT_BOOK, PLAY, STOP, SKIP, PAUSE, RESUME, SHUFFLE, TOGGLE, VOLUME, MUSIC_COMMANDS } = require('../constants');
 const DCH = require('./discordClientHelper');
 
-async function readMessage(msg) {
+async function readMessage(msg, client) {
   const messageText = msg.content
   const messageCommand = messageText.split(' ')[0];
 
@@ -53,6 +53,34 @@ async function readMessage(msg) {
         const text = messageText.replace(/^.updateCurrentBook/i, '');
         DCH.updateCurrentBook(text);
         msg.reply('Book Updated!');
+        break;
+      case PLAY :
+        DCH.play(msg, client);
+        break;
+      case SKIP : 
+        DCH.skip(msg, client);
+        break;
+      case STOP :
+        DCH.stop(msg, client);
+        break;
+      case PAUSE :
+        DCH.pause(msg, client);
+        break;
+      case RESUME :
+        DCH.resume(msg, client);
+        break;
+      case SHUFFLE :
+        DCH.shuffle(msg, client);
+        break;
+      case TOGGLE :
+        DCH.toggle(msg, client);
+        break;
+      case VOLUME :
+        DCH.volume(msg, client);
+        break;
+      case MUSIC_COMMANDS :
+        const musicCommandsMessage = DCH.getMusicCommandsMessage();
+        msg.reply(musicCommandsMessage);
         break;
       default :
         const badCommand = messageText.split(' ')[0];

@@ -2,7 +2,7 @@ const fs = require('fs')
 const relativeTime = require('dayjs/plugin/relativeTime')
 const dayjs = require('dayjs').extend(relativeTime)
 const { isISBN, embedMessage, isEmpty } = require('../utils/utils')
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll, EXTEND_TIME, REFRESH_GOODREADS } = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll, EXTEND_TIME, REFRESH_GOODREADS, PLAY, SKIP, STOP, RESUME, PAUSE, SHUFFLE, TOGGLE, MUSIC_COMMANDS, VOLUME } = require('../constants');
 const { saveCurrentBookAsPrevious, setSelectedBookData, updateGoodReadsData } = require('./selectedBookClient')
 
 const bookClubInfoFileLocation = 'savedData/bookClubInfo.json'
@@ -10,6 +10,11 @@ const bookClubInfo = require(`../${bookClubInfoFileLocation}`)
 const selectedBook = require('../savedData/selectedBook.json')
 const discordFileLocation = 'savedData/discord.json'
 const discordInfo = require(`../${discordFileLocation}`)
+
+const settings = {
+  prefix: '.',
+  token: process.env.DISCORD_TOKEN
+};
 
 function addBook(message) {
   let bookISBN = message.split(' ').filter(text => isISBN(text))[0]
@@ -283,6 +288,10 @@ function getCommandsMessage() {
       name: HELP,
       value: 'This command provide you with useful information for interacting with the librarian'
     },
+    {
+      name: MUSIC_COMMANDS,
+      value: 'Use .mcommands to see all the Music Bot commands'
+    }
   ];
   return embedMessage({
     title: 'Commands',
@@ -318,6 +327,172 @@ function getHelpMessage() {
   });
 }
 
+function getMusicCommandsMessage() {
+  const Mcommands = [
+    {
+      name: PLAY,
+      value: 'This will play any song with the song name or URL after the command',
+      inline: true
+    },
+    {
+      name: SKIP,
+      value: 'This command will skip current song',
+      inline: true
+    },
+    {
+      name: STOP,
+      value: 'This command will stop playing music',
+      inline: true
+    },
+    {
+      name: PAUSE,
+      value: 'This command will pause playing'
+    },
+    { name: RESUME,
+      value: 'This command will resume playing',
+      inline: true
+    },
+    { name: SHUFFLE,
+      value: 'This command will shuffle the queue',
+      inline: true
+    },
+    { name: TOGGLE,
+      value: 'This command will repeat the current song for ever and ever and ever',
+      inline: true
+    },
+    { name: VOLUME,
+      value: 'This command will change the bot volume from 0-150',
+      inline: true
+    },
+    {
+      name: MUSIC_COMMANDS,
+      value: 'This command will list all available Music Bot commands'
+    }
+  ];
+  return embedMessage({
+    title: 'Music commands',
+    description: 'Below you will find a list of useful Music Bot commands',
+    fields: [...Mcommands]
+  });
+}
+
+
+function stop(msg, client){
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+  if(command === 'stop'){
+      client.player.stop(msg.guild.id);
+      msg.channel.send('Music stopped, the Queue was cleared!');
+  }
+}
+  async function skip(msg, client){
+
+    const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    if(command === 'skip'){
+        let song = await client.player.skip(msg.guild.id);
+        msg.channel.send(`${song.name} was skipped!`);
+    }
+  }
+async function play(msg, client){
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+  if (command === 'play') {
+    
+      let isPlaying = client.player.isPlaying(msg.guild.id);
+      let song
+      if (args[0].includes("playlist")){
+        let playlist = await client.player.playlist(msg.guild.id, args.join(' '), msg.member.voice.channel, 10, msg.author.tag);
+        song = playlist.song;
+        playlist = playlist.playlist;
+        msg.channel.send(`Added a Playlist to the queue with **${playlist.videoCount} songs**, that was **made by ${playlist.channel}**.`)
+        if (!isPlaying) {
+          msg.channel.send(`Started playing ${song.name}!`);
+          song.queue.on('end', () => {
+              msg.channel.send('The queue is empty, please add new songs!');
+          });
+          song.queue.on('songChanged', (oldSong, newSong, skipped, repeatMode) => {
+              if (repeatMode) {
+                  msg.channel.send(`Playing ${newSong.name} again...`);
+              } else {
+                  msg.channel.send(`Now playing ${newSong.name}...`);
+              }
+          });
+      }
+      }
+      else {
+        if(isPlaying){
+          let song = await client.player.addToQueue(msg.guild.id, args.join(' '));
+          song = song.song;
+          msg.channel.send(`Song ${song.name} was added to the queue!`);
+      }
+      else {
+        let song = await client.player.play(msg.member.voice.channel, args.join(' '));
+        song = song.song;
+        msg.channel.send(`Started playing ${song.name}!`);
+        }
+      }  
+  }
+}
+
+async function pause(msg, client) {
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+    if(command === 'pause'){
+        let song = await client.player.pause(msg.guild.id);
+        msg.channel.send(`${song.name} was paused!`);
+    }
+}
+
+async function resume(msg, client) {
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+  if(command === 'resume'){
+      let song = await client.player.resume(msg.guild.id);
+      msg.channel.send(`${song.name} was resumed!`);
+  }
+}
+
+function shuffle(msg, client){
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+  if(command === 'shuffle'){
+      client.player.shuffle(msg.guild.id);
+      msg.channel.send('Server Queue was shuffled.');
+  }
+};
+
+function toggle(msg, client){
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+
+  if (command === 'toggle') {
+      let toggle = client.player.toggleLoop(msg.guild.id);
+      if (toggle)
+          msg.channel.send('I will now repeat the current playing song.');
+      else msg.channel.send('I will not longer repeat the current playing song.');
+  }
+}
+
+function volume(msg, client){
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+console.log(parseInt(args))
+  if(command === 'volume' && parseInt(args) >= 0 && parseInt(args) <= 200){
+      client.player.setVolume(msg.guild.id, parseInt(args[0]));
+      msg.channel.send(`Volume set to ${args[0]} !`);
+  }
+  else {
+    msg.channel.send('Please enter a number 0-150!')
+}};
+
+
 module.exports = {
   addBook,
   getBooks,
@@ -329,5 +504,14 @@ module.exports = {
   getHelpMessage,
   randomize,
   getCommandsMessage,
-  refreshGoodReads
+  refreshGoodReads,
+  play,
+  stop,
+  skip,
+  pause,
+  resume,
+  shuffle,
+  toggle,
+  volume,
+  getMusicCommandsMessage
 }
