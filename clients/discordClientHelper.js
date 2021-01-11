@@ -25,10 +25,7 @@ const {
   SHUFFLE,
   TOGGLE,
   MUSIC_COMMANDS,
-  VOLUME,
-  PLAYSHORT,
-  SKIPSHORT,
-  QUEUE
+  VOLUME
 } = require('../constants');
 const {
   saveCurrentBookAsPrevious,
