@@ -1,11 +1,11 @@
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, EXTEND_TIME, random_book, roll, REVIEW_BOOK, REFRESH_GOODREADS, UPDATE_CURRENT_BOOK, PLAY, STOP, SKIP, PAUSE, RESUME, SHUFFLE, TOGGLE, VOLUME, MUSIC_COMMANDS } = require('../constants');
+const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, BOOKCOMMANDS, DELETE_BOOK, EXTEND_TIME, random_book, roll, REVIEW_BOOK, REFRESH_GOODREADS, UPDATE_CURRENT_BOOK, PLAY, STOP, SKIP, PAUSE, RESUME, SHUFFLE, TOGGLE, VOLUME, MUSIC_COMMANDS, QUEUE } = require('../constants');
 const DCH = require('./discordClientHelper');
 
 async function readMessage(msg, client) {
-  const messageText = msg.content
-  const messageCommand = messageText.split(' ')[0];
+  const messageText = msg.content;
+  const messageCommand = messageText.split(' ')[0].toLowerCase();
 
-  if (messageCommand.startsWith('.')) {
+  if (messageCommand.startsWith('.') || messageCommand.startsWith('!')) {
     switch(messageCommand) {
       case ADD_BOOK : 
       const message = messageText.replace(/^.addBook/i, '');
@@ -35,7 +35,7 @@ async function readMessage(msg, client) {
         const randomB = DCH.randomize()
         msg.reply(randomB)
         break;
-      case COMMANDS :
+      case BOOKCOMMANDS :
         const commandsMessage = DCH.getCommandsMessage();
         msg.reply(commandsMessage);
         break;
@@ -54,13 +54,13 @@ async function readMessage(msg, client) {
         DCH.updateCurrentBook(text);
         msg.reply('Book Updated!');
         break;
-      case PLAY :
+      case PLAY.find(command => command === messageCommand) :
         DCH.play(msg, client);
         break;
-      case SKIP : 
+      case SKIP.find(command => command === messageCommand) :
         DCH.skip(msg, client);
         break;
-      case STOP :
+      case STOP.find(command => command === messageCommand) :
         DCH.stop(msg, client);
         break;
       case PAUSE :
@@ -81,6 +81,9 @@ async function readMessage(msg, client) {
       case MUSIC_COMMANDS :
         const musicCommandsMessage = DCH.getMusicCommandsMessage();
         msg.reply(musicCommandsMessage);
+        break;
+      case QUEUE :
+        DCH.queue(msg, client);
         break;
       default :
         const badCommand = messageText.split(' ')[0];

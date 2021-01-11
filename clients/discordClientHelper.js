@@ -1,9 +1,40 @@
 const fs = require('fs')
 const relativeTime = require('dayjs/plugin/relativeTime')
 const dayjs = require('dayjs').extend(relativeTime)
-const { isISBN, embedMessage, isEmpty } = require('../utils/utils')
-const { ADD_BOOK, SHOW_BOOKS, CURRENT_BOOK, HELP, COMMANDS, DELETE_BOOK, random_book, roll, EXTEND_TIME, REFRESH_GOODREADS, PLAY, SKIP, STOP, RESUME, PAUSE, SHUFFLE, TOGGLE, MUSIC_COMMANDS, VOLUME } = require('../constants');
-const { saveCurrentBookAsPrevious, setSelectedBookData, updateGoodReadsData } = require('./selectedBookClient')
+const {
+  isISBN,
+  embedMessage,
+  isEmpty
+} = require('../utils/utils')
+const {
+  ADD_BOOK,
+  SHOW_BOOKS,
+  CURRENT_BOOK,
+  HELP,
+  BOOKCOMMANDS,
+  DELETE_BOOK,
+  random_book,
+  roll,
+  EXTEND_TIME,
+  REFRESH_GOODREADS,
+  PLAY,
+  SKIP,
+  STOP,
+  RESUME,
+  PAUSE,
+  SHUFFLE,
+  TOGGLE,
+  MUSIC_COMMANDS,
+  VOLUME,
+  PLAYSHORT,
+  SKIPSHORT,
+  QUEUE
+} = require('../constants');
+const {
+  saveCurrentBookAsPrevious,
+  setSelectedBookData,
+  updateGoodReadsData
+} = require('./selectedBookClient')
 
 const bookClubInfoFileLocation = 'savedData/bookClubInfo.json'
 const bookClubInfo = require(`../${bookClubInfoFileLocation}`)
@@ -12,7 +43,7 @@ const discordFileLocation = 'savedData/discord.json'
 const discordInfo = require(`../${discordFileLocation}`)
 
 const settings = {
-  prefix: '.',
+  prefix: '.' || '!',
   token: process.env.DISCORD_TOKEN
 };
 
@@ -39,8 +70,7 @@ function addBook(message) {
   });
 
 
-  const bookInfo = [
-    {
+  const bookInfo = [{
       name: 'Message Received',
       value: message
     },
@@ -70,9 +100,15 @@ function addBook(message) {
 
 function updateCurrentBook(message) {
   const messageTitle = message.split(/(?<= |^)by(?= |$)/gi)[0];
-  const { title, author } = bookClubInfo.suggestedBooks.find(book => book.title = messageTitle);
+  const {
+    title,
+    author
+  } = bookClubInfo.suggestedBooks.find(book => book.title = messageTitle);
   saveCurrentBookAsPrevious();
-  setSelectedBookData({ title, author });
+  setSelectedBookData({
+    title,
+    author
+  });
 }
 
 function randomize() {
@@ -81,7 +117,7 @@ function randomize() {
   return ('The next book is ' + randomItem.title)
 }
 
-function refreshGoodReads () {
+function refreshGoodReads() {
   updateGoodReadsData();
 }
 
@@ -94,9 +130,8 @@ function getCurrentBook() {
   - Rating: ${selectedBook.goodreads.average_rating} based on ${selectedBook.goodreads.ratings_count} ratings
   - Published: ${selectedBook.goodreads.original_publication_month}/${selectedBook.goodreads.original_publication_day}/${selectedBook.goodreads.original_publication_year}
   ` : ' Goodreads Info Not Found';
-  
-  const bookInfo = [
-    {
+
+  const bookInfo = [{
       name: selectedBook.title,
       value: selectedBook.author || ''
     },
@@ -163,11 +198,14 @@ async function deleteBook(bookIndex, deleteMessage) {
   deleteMessage.edit(embedMessage({
     title: 'Book Deleted!',
     description: 'The selected book has been removed',
-    fields: [{ name: deletedBook.title, value: deletedBook.author }]
+    fields: [{
+      name: deletedBook.title,
+      value: deletedBook.author
+    }]
   }))
 }
 
-function getExtensionTime (messageText) {
+function getExtensionTime(messageText) {
   const extensionTime = messageText.split(' ').find(string => {
     return isNaN(string) === false;
   });
@@ -177,11 +215,17 @@ function getExtensionTime (messageText) {
     }
   });
 
-  return { extensionTime, extensionTimeUnit };
+  return {
+    extensionTime,
+    extensionTimeUnit
+  };
 }
 
-async function extendTime (msg) {
-  const { extensionTime, extensionTimeUnit } = getExtensionTime(msg.content);
+async function extendTime(msg) {
+  const {
+    extensionTime,
+    extensionTimeUnit
+  } = getExtensionTime(msg.content);
   if (!extensionTime || !extensionTimeUnit) {
     msg.reply(`\n Error: Please specify a number and a time unit (days, month, years, etc) \n ex: .extendTime 30 days`);
   } else {
@@ -193,16 +237,19 @@ async function extendTime (msg) {
         value: `Voting will expire after 3 votes or 1 hour.\n Voting more than once will invalidate the extension request`,
       }
     })).then(async message => {
-      const collector = message.createReactionCollector(() => true, { max: 3, time: 3600000 });
+      const collector = message.createReactionCollector(() => true, {
+        max: 3,
+        time: 3600000
+      });
       let users = [];
       let shouldUpdate = true;
       collector.on('collect', (reaction, user) => {
-          if (users.includes(user.id)) {
-            shouldUpdate = false;
-            msg.channel.send('Stop trying to cheat!');
-          } else {
-            users.push(user.id);
-          }
+        if (users.includes(user.id)) {
+          shouldUpdate = false;
+          msg.channel.send('Stop trying to cheat!');
+        } else {
+          users.push(user.id);
+        }
       });
       collector.on('end', (collected) => {
         if ((collected.size === 3) && shouldUpdate) {
@@ -218,7 +265,7 @@ async function extendTime (msg) {
   }
 }
 
-function sendDeleteBookMessage (msg) {
+function sendDeleteBookMessage(msg) {
   const bookInfo = bookClubInfo.suggestedBooks.map((book, index) => {
     return {
       name: `${book.title} ${discordInfo.emojis[index]}`,
@@ -232,7 +279,9 @@ function sendDeleteBookMessage (msg) {
     description: 'To delete a book, react with the appropriate reaction',
     fields: [...bookInfo]
   })).then(async message => {
-    const collector = message.createReactionCollector(() => true, { time: 15000 });
+    const collector = message.createReactionCollector(() => true, {
+      time: 15000
+    });
     collector.on('collect', reaction => {
       const matchingEmoji = discordInfo.emojis.find(emoji => emoji === reaction.emoji.name)
       if (matchingEmoji !== -1) {
@@ -244,8 +293,7 @@ function sendDeleteBookMessage (msg) {
 }
 
 function getCommandsMessage() {
-  const commands = [
-    {
+  const commands = [{
       name: CURRENT_BOOK,
       value: 'This command will show details of the current book',
       inline: true
@@ -264,47 +312,54 @@ function getCommandsMessage() {
       name: DELETE_BOOK,
       value: 'This command will allow you delete a book from the list of suggested books'
     },
-    { name: random_book,
+    {
+      name: random_book,
       value: 'This command will choose the next book',
       inline: true
     },
-    { name: roll,
+    {
+      name: roll,
       value: 'This command will roll a number between 1-100, Good Luck',
       inline: true
     },
-    { name: EXTEND_TIME,
+    {
+      name: EXTEND_TIME,
       value: 'This command will allow you to extend the time left for the current book',
       inline: true
     },
-    { name: REFRESH_GOODREADS,
+    {
+      name: REFRESH_GOODREADS,
       value: 'This command will refresh the data pulled from good reads about the current book',
       inline: true
     },
     {
-      name: COMMANDS,
+      name: BOOKCOMMANDS,
       value: 'This command will list all available commands'
     },
     {
       name: HELP,
       value: 'This command provide you with useful information for interacting with the librarian'
     },
-    {
-      name: MUSIC_COMMANDS,
-      value: 'Use .mcommands to see all the Music Bot commands'
-    }
   ];
   return embedMessage({
-    title: 'Commands',
+    title: 'Book commands',
     description: 'Below you will find a list of useful commands',
     fields: [...commands]
   });
 }
 
 function getHelpMessage() {
-  const helpInfo = [
-    {
+  const helpInfo = [{
       name: 'Info',
-      value: 'To find a list of commands, type `.commands`'
+      value: 'This bot has Book Club commands and Music player commands'
+    },
+    {
+      name: 'Book Commands',
+      value: 'To find a list of book commands, type `.bookcommands`'
+    },
+    {
+      name: 'Music Commands',
+      value: 'To find a list of book commands, type `.musiccommands`'
     },
     {
       name: 'Creators',
@@ -328,19 +383,18 @@ function getHelpMessage() {
 }
 
 function getMusicCommandsMessage() {
-  const Mcommands = [
-    {
-      name: PLAY,
+  const Mcommands = [{
+      name: PLAY.join(' or '),
       value: 'This will play any song with the song name or URL after the command',
       inline: true
     },
     {
-      name: SKIP,
+      name: SKIP.join(' or '),
       value: 'This command will skip current song',
       inline: true
     },
     {
-      name: STOP,
+      name: STOP.join(' or '),
       value: 'This command will stop playing music',
       inline: true
     },
@@ -348,19 +402,23 @@ function getMusicCommandsMessage() {
       name: PAUSE,
       value: 'This command will pause playing'
     },
-    { name: RESUME,
+    {
+      name: RESUME,
       value: 'This command will resume playing',
       inline: true
     },
-    { name: SHUFFLE,
+    {
+      name: SHUFFLE,
       value: 'This command will shuffle the queue',
       inline: true
     },
-    { name: TOGGLE,
+    {
+      name: TOGGLE,
       value: 'This command will repeat the current song for ever and ever and ever',
       inline: true
     },
-    { name: VOLUME,
+    {
+      name: VOLUME,
       value: 'This command will change the bot volume from 0-150',
       inline: true
     },
@@ -376,121 +434,155 @@ function getMusicCommandsMessage() {
   });
 }
 
-
-function stop(msg, client){
+function stop(msg, client) {
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
 
-  if(command === 'stop'){
-      client.player.stop(msg.guild.id);
-      msg.channel.send('Music stopped, the Queue was cleared!');
+  if (STOP.find(commandd => `.${command}` === commandd || `!${command}` === commandd)) {
+    client.player.stop(msg.guild.id);
+    msg.channel.send('Music stopped, the Queue was cleared!');
   }
 }
-  async function skip(msg, client){
 
-    const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
-    const command = args.shift().toLowerCase();
-
-    if(command === 'skip'){
-        let song = await client.player.skip(msg.guild.id);
-        msg.channel.send(`${song.name} was skipped!`);
-    }
-  }
-async function play(msg, client){
+async function skip(msg, client) {
+  const prefix = msg.content.split(settings.prefix.length)[0]
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
+  let isPlaying = client.player.isPlaying(msg.guild.id);
+  let queue = await client.player.getQueue(msg.guild.id);
 
-  if (command === 'play') {
-    
-      let isPlaying = client.player.isPlaying(msg.guild.id);
-      let song
-      if (args[0].includes("playlist")){
-        let playlist = await client.player.playlist(msg.guild.id, args.join(' '), msg.member.voice.channel, 10, msg.author.tag);
-        song = playlist.song;
-        playlist = playlist.playlist;
-        msg.channel.send(`Added a Playlist to the queue with **${playlist.videoCount} songs**, that was **made by ${playlist.channel}**.`)
-        if (!isPlaying) {
-          msg.channel.send(`Started playing ${song.name}!`);
-          song.queue.on('end', () => {
-              msg.channel.send('The queue is empty, please add new songs!');
-          });
-          song.queue.on('songChanged', (oldSong, newSong, skipped, repeatMode) => {
-              if (repeatMode) {
-                  msg.channel.send(`Playing ${newSong.name} again...`);
-              } else {
-                  msg.channel.send(`Now playing ${newSong.name}...`);
-              }
-          });
+  if (queue && queue.songs.length >= 2) {
+
+    if (prefix.startsWith('.') && SKIP.find(commandd => `.${command}` === commandd)) {
+      let song = await client.player.skip(msg.guild.id);
+      msg.channel.send(`${song.name} was skipped!`);
+    } else if (prefix.startsWith('!') && SKIP.find(commandd => `!${command}` === commandd) && isPlaying) {
+      let toggle = client.player.toggleLoop(msg.guild.id);
+      if (toggle)
+        msg.channel.send('I will now repeat the current playing song.');
+      else msg.channel.send('I will not longer repeat the current playing song.');
+    }
+  } else if (!isPlaying) {
+    msg.channel.send('Music bot is not playing anything')
+  } else {
+    client.player.stop(msg.guild.id);
+    msg.channel.send('Music stopped!');
+  }
+}
+
+async function queue(msg, client) {
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+  let isPlaying = client.player.isPlaying(msg.guild.id);
+  if (command === 'queue' && isPlaying) {
+    let queue = await client.player.getQueue(msg.guild.id);
+    msg.channel.send('Queue:\n' + (queue.songs.map((song, i) => {
+      return `${i === 0 ? 'Now Playing' : `#${i+1}`} - ${song.name} | ${song.author}`
+    }).join('\n')));
+  } else if (!isPlaying) {
+    msg.channel.send("Music bot is not playing anything.")
+  }
+}
+
+async function play(msg, client) {
+  const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
+  const command = args.shift().toLowerCase();
+  if (args[0] === undefined && (command === 'play' || 'p')){msg.channel.send('Please add a song after command.')}
+  else if (command === 'play' || 'p' ) {
+
+    let isPlaying = client.player.isPlaying(msg.guild.id);
+    let song
+    if (args[0].includes("playlist")) {
+      let playlist = await client.player.playlist(msg.guild.id, args.join(' '), msg.member.voice.channel, 10, msg.author.tag);
+      song = playlist.song;
+      playlist = playlist.playlist;
+      msg.channel.send(`Added a Playlist to the queue with **${playlist.videoCount} songs**, that was **made by ${playlist.channel}**.`)
+      if (!isPlaying) {
+        msg.channel.send(`Started playing ${song.name}!`);
+        song.queue.on('end', () => {
+          msg.channel.send('The queue is empty, please add new songs!');
+        });
+        song.queue.on('songChanged', (oldSong, newSong, skipped, repeatMode) => {
+          if (repeatMode) {
+            msg.channel.send(`Playing ${newSong.name} again...`);
+          } else {
+            msg.channel.send(`Now playing ${newSong.name}...`);
+          }
+        });
       }
-      }
-      else {
-        if(isPlaying){
-          let song = await client.player.addToQueue(msg.guild.id, args.join(' '));
-          song = song.song;
-          msg.channel.send(`Song ${song.name} was added to the queue!`);
-      }
-      else {
+    } else {
+      if (isPlaying) {
+        let song = await client.player.addToQueue(msg.guild.id, args.join(' '));
+        song = song.song;
+        msg.channel.send(`Song ${song.name} was added to the queue!`);
+      } else {
         let song = await client.player.play(msg.member.voice.channel, args.join(' '));
         song = song.song;
         msg.channel.send(`Started playing ${song.name}!`);
-        }
-      }  
+      }
+    }
   }
 }
 
 async function pause(msg, client) {
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
-
-    if(command === 'pause'){
-        let song = await client.player.pause(msg.guild.id);
-        msg.channel.send(`${song.name} was paused!`);
-    }
+  let isPlaying = client.player.isPlaying(msg.guild.id);
+  if (command === 'pause' && isPlaying) {
+    let song = await client.player.pause(msg.guild.id);
+    msg.channel.send(`${song.name} was paused!`);
+  } else if (!isPlaying) {
+    msg.channel.send("Music bot is not playing anything.")
+  }
 }
 
 async function resume(msg, client) {
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
 
-  if(command === 'resume'){
-      let song = await client.player.resume(msg.guild.id);
-      msg.channel.send(`${song.name} was resumed!`);
+  if (command === 'resume') {
+    let song = await client.player.resume(msg.guild.id);
+    msg.channel.send(`${song.name} was resumed!`);
   }
 }
 
-function shuffle(msg, client){
+function shuffle(msg, client) {
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
-
-  if(command === 'shuffle'){
-      client.player.shuffle(msg.guild.id);
-      msg.channel.send('Server Queue was shuffled.');
+  let isPlaying = client.player.isPlaying(msg.guild.id);
+  if (command === 'shuffle' && isPlaying) {
+    client.player.shuffle(msg.guild.id);
+    msg.channel.send('Server Queue was shuffled.');
+  } else if (!isPlaying) {
+    msg.channel.send('There is nothing in the queue.');
   }
 };
 
-function toggle(msg, client){
+function toggle(msg, client) {
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
-
-  if (command === 'toggle') {
-      let toggle = client.player.toggleLoop(msg.guild.id);
-      if (toggle)
-          msg.channel.send('I will now repeat the current playing song.');
-      else msg.channel.send('I will not longer repeat the current playing song.');
+  let isPlaying = client.player.isPlaying(msg.guild.id);
+  if (command === 'toggle' && isPlaying) {
+    let toggle = client.player.toggleLoop(msg.guild.id);
+    if (toggle)
+      msg.channel.send('I will now repeat the current playing song.');
+    else msg.channel.send('I will not longer repeat the current playing song.');
+  } else if (!isPlaying) {
+    msg.channel.send('There is nothing playing.');
   }
 }
 
-function volume(msg, client){
+function volume(msg, client) {
   const args = msg.content.slice(settings.prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
-console.log(parseInt(args))
-  if(command === 'volume' && parseInt(args) >= 0 && parseInt(args) <= 200){
-      client.player.setVolume(msg.guild.id, parseInt(args[0]));
-      msg.channel.send(`Volume set to ${args[0]} !`);
-  }
-  else {
+  console.log(parseInt(args))
+  if (command === 'volume' && parseInt(args) >= 0 && parseInt(args) <= 200) {
+    client.player.setVolume(msg.guild.id, parseInt(args[0]));
+    msg.channel.send(`Volume set to ${args[0]} !`);
+  } else {
     msg.channel.send('Please enter a number 0-150!')
-}};
+  }
+};
 
 
 module.exports = {
@@ -513,5 +605,6 @@ module.exports = {
   shuffle,
   toggle,
   volume,
-  getMusicCommandsMessage
+  getMusicCommandsMessage,
+  queue
 }
