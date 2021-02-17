@@ -68,3 +68,5 @@ Make sure you have git installed
     - Click create pull request again
     
 If it is approved, your changes will be added to the bots code.
+
+MUSIC PLAYER NPM https://www.npmjs.com/package/discord-music-player

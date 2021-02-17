@@ -21,11 +21,13 @@
   "dependencies": {
     "cron": "^1.8.2",
     "dayjs": "^1.8.25",
+    "discord-music-player": "^6.3.5",
     "discord.js": "^12.1.1",
     "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1",
     "xml-js": "^1.6.11",
-    "xml2js": "^0.4.23"
+    "xml2js": "^0.4.23",
+    "ytdl-core": "^4.4.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
